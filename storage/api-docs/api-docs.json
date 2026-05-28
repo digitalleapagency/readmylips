@@ -1,0 +1,438 @@
+{
+    "openapi": "3.0.0",
+    "info": [
+        {
+            "title": "XpertBooking API",
+            "description": "Full API documentation for XpertBooking, including the main API (v1) and Dropsolid/Open AI webhook endpoints.",
+            "version": "1.0.0"
+        }
+    ],
+    "servers": [
+        {
+            "url": "/",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/v1/login": {
+            "post": {
+                "tags": [
+                    "API v1"
+                ],
+                "summary": "Login",
+                "description": "API v1 Endpoints Documentation\n\nMain API base path: /api/v1/\nAuthentication: Laravel Passport Bearer token (Authorization: Bearer {token})",
+                "operationId": "apiLogin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+        "/api/v1/register": {
+            "post": {
+                "tags": [
+                    "API v1"
+                ],
+                "summary": "Register",
+                "operationId": "apiRegister",
+                "responses": {
+                    "201": {
+                        "description": "Registration successful"
+                    }
+                }
+            }
+        },
+        "/api/v1/assets": {
+            "get": {
+                "tags": [
+                    "API v1"
+                ],
+                "summary": "List assets",
+                "operationId": "apiAssets",
+                "responses": {
+                    "200": {
+                        "description": "List of assets"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/assets/{id}": {
+            "get": {
+                "tags": [
+                    "API v1"
+                ],
+                "summary": "Get asset by ID",
+                "operationId": "apiAssetShow",
+                "responses": {
+                    "200": {
+                        "description": "Asset details"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ]
+        },
+        "/webhook/criteria": {
+            "get": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "Get filter criteria",
+                "description": "Retrieve the list of available filter criteria (e.g. non-profit) that can be used to filter assets.",
+                "operationId": "webhookCriteria",
+                "responses": {
+                    "200": {
+                        "description": "List of criteria"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "webhook_bearer": []
+                    }
+                ]
+            }
+        },
+        "/webhook/categories": {
+            "get": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "Get categories",
+                "description": "Retrieve all active categories (topics/themes) for the customer.",
+                "operationId": "webhookCategories",
+                "responses": {
+                    "200": {
+                        "description": "List of categories"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "webhook_bearer": []
+                    }
+                ]
+            }
+        },
+        "/webhook/topics": {
+            "get": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "Get topics",
+                "description": "Retrieve all topics (categories) for filtering and display.",
+                "operationId": "webhookTopics",
+                "responses": {
+                    "200": {
+                        "description": "List of topics"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "webhook_bearer": []
+                    }
+                ]
+            }
+        },
+        "/webhook/assets": {
+            "get": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "List all assets",
+                "description": "Get all active assets for customer_id=1. Optional query param: updated_at (Unix timestamp, 2h offset applied) to filter by update date.",
+                "operationId": "webhookAssets",
+                "parameters": [
+                    {
+                        "name": "updated_at",
+                        "in": "query",
+                        "description": "Unix timestamp - 2 hours will be subtracted for filtering",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1710000000
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of assets"
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing Bearer token"
+                    }
+                },
+                "security": [
+                    {
+                        "webhook_bearer": []
+                    }
+                ]
+            }
+        },
+        "/webhook/asset/{id}/images": {
+            "get": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "Get asset images",
+                "description": "Retrieve the images array (black-white, color, extra) for a specific asset.",
+                "operationId": "webhookAssetImages",
+                "responses": {
+                    "200": {
+                        "description": "Images array"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Asset not found"
+                    }
+                },
+                "security": [
+                    {
+                        "webhook_bearer": []
+                    }
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Asset ID",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ]
+        },
+        "/webhook/asset/{id}": {
+            "get": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "Get single asset",
+                "description": "Retrieve a specific asset by ID",
+                "operationId": "webhookAssetShow",
+                "responses": {
+                    "200": {
+                        "description": "Asset details"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Asset not found"
+                    }
+                },
+                "security": [
+                    {
+                        "webhook_bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "Update asset",
+                "description": "Update an existing asset by ID",
+                "operationId": "webhookAssetUpdate",
+                "requestBody": {
+                    "description": "Asset data to update",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Asset updated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Asset not found"
+                    }
+                },
+                "security": [
+                    {
+                        "webhook_bearer": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "Create asset",
+                "description": "Create a new asset. Pass request body with asset data, or data will be fetched from external source using the ID.",
+                "operationId": "webhookAssetCreate",
+                "requestBody": {
+                    "description": "Asset data (optional - fetches from external source if empty)",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            },
+                            "example": {
+                                "name": "Asset Name",
+                                "description": "Description"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Asset created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "No data found or asset already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "webhook_bearer": []
+                    }
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Asset ID (use internal ID for GET/PUT, Drupal ID for POST)",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ]
+        },
+        "/webhook/asset/{id}/trigger": {
+            "get": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "Trigger asset update or create",
+                "description": "Update existing asset or create new one. Uses updateOrCreate with drupal_id.",
+                "operationId": "webhookAssetTrigger",
+                "responses": {
+                    "200": {
+                        "description": "Asset processed successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "No data found"
+                    }
+                },
+                "security": [
+                    {
+                        "webhook_bearer": []
+                    }
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Asset ID (Drupal ID for create)",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ]
+        }
+    },
+    "tags": [
+        {
+            "name": "Webhook",
+            "description": "Dropsolid/Open AI webhook endpoints - requires Bearer token authentication"
+        },
+        {
+            "name": "API v1",
+            "description": "Main API endpoints - requires Laravel Passport Bearer token"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearer": {
+                "type": "http",
+                "description": "Bearer token authentication (Laravel Passport)",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            },
+            "webhook_bearer": {
+                "type": "http",
+                "description": "Bearer token for Dropsolid/Open AI webhook integration",
+                "scheme": "bearer"
+            }
+        }
+    }
+}
