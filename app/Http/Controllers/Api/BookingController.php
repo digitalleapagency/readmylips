@@ -586,7 +586,7 @@ class BookingController extends Controller
                 'Remark'
             ];
             
-            fputcsv($file, $headers);
+            fputcsv($file, $headers, ';');
             
             // Status mapping
             $statusMap = [
@@ -651,7 +651,7 @@ class BookingController extends Controller
                     $booking->remark ?? ''
                 ];
                 
-                fputcsv($file, $row);
+                fputcsv($file, $row, ';');
             }
             
             fclose($file);
