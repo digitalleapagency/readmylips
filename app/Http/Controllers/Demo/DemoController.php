@@ -1453,6 +1453,9 @@ class DemoController extends Controller {
 				    $booking->customer_refused = 1;
 				    $booking->status = 2;
 				    
+				    if(isset($_POST['refuse_reason_id']) && $_POST['refuse_reason_id'] !== '') {
+				    	$booking->customer_refused_reason_id = $_POST['refuse_reason_id'];
+				    }
 				    if(isset($_POST['refuse_reason'])) {
 				    	$booking->customer_refused_reason = $_POST['refuse_reason'];
 				    }
@@ -1467,6 +1470,9 @@ class DemoController extends Controller {
 				    $booking->customer_refused = 1;
 				    $booking->status = 2;
 				    
+				    if(isset($_POST['refuse_reason_id']) && $_POST['refuse_reason_id'] !== '') {
+				    	$booking->customer_refused_reason_id = $_POST['refuse_reason_id'];
+				    }
 				    if(isset($_POST['refuse_reason'])) {
 				    	$booking->customer_refused_reason = $_POST['refuse_reason'];
 				    }

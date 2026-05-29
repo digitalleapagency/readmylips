@@ -170,7 +170,38 @@ class CustomerSettingController extends Controller
         
         $settings->default_estimate_lines = json_decode($settings->default_estimate_lines);
         
+        $settings->refused_reason_options = self::decode_refused_reason_options($settings->refused_reason_options);
+        $settings->source_options = self::decode_source_options($settings->source_options);
+        
         return response()->json(['settings' => $settings], 200);
+    }
+    
+    public static function decode_refused_reason_options($raw) {
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded) && count($decoded) > 0) {
+            return array_values($decoded);
+        }
+        return [
+            ['id' => 'budget', 'name' => 'Budget'],
+            ['id' => 'event_cancelled', 'name' => 'Event afgelast'],
+            ['id' => 'internal_speaker', 'name' => 'Interne spreker/moderator'],
+            ['id' => 'other', 'name' => 'Andere'],
+        ];
+    }
+    
+    public static function decode_source_options($raw) {
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded) && count($decoded) > 0) {
+            return array_values($decoded);
+        }
+        return [
+            ['id' => 'google', 'name' => 'Google/internet'],
+            ['id' => 'linkedin', 'name' => 'LinkedIn'],
+            ['id' => 'instagram', 'name' => 'Instagram'],
+            ['id' => 'event', 'name' => 'Event/beurs'],
+            ['id' => 'samenwerking', 'name' => 'Eerdere samenwerking'],
+            ['id' => 'aanbeveling', 'name' => 'Aanbeveling'],
+        ];
     }
     
     public function type(Request $request) {
@@ -245,6 +276,18 @@ class CustomerSettingController extends Controller
 	    }
 	    
 	    $settings->default_estimate_lines = json_encode($request->default_estimate_lines);
+	    
+	    if (is_array($request->refused_reason_options)) {
+		    $settings->refused_reason_options = json_encode(array_values(array_filter($request->refused_reason_options, function ($opt) {
+			    return is_array($opt) && !empty($opt['id']) && !empty($opt['name']);
+		    })));
+	    }
+	    
+	    if (is_array($request->source_options)) {
+		    $settings->source_options = json_encode(array_values(array_filter($request->source_options, function ($opt) {
+			    return is_array($opt) && !empty($opt['id']) && !empty($opt['name']);
+		    })));
+	    }
 	    
 	    $settings->save();
 	    

@@ -1,3 +1,16 @@
+<?php
+    $refused_reason_options_raw = isset($customer_settings) && isset($customer_settings->refused_reason_options)
+        ? json_decode($customer_settings->refused_reason_options, true)
+        : null;
+    if (!is_array($refused_reason_options_raw) || count($refused_reason_options_raw) === 0) {
+        $refused_reason_options_raw = [
+            ['id' => 'budget', 'name' => 'Budget'],
+            ['id' => 'event_cancelled', 'name' => 'Event afgelast'],
+            ['id' => 'internal_speaker', 'name' => 'Interne spreker/moderator'],
+            ['id' => 'other', 'name' => 'Andere'],
+        ];
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -733,8 +746,14 @@
 				                            </span>
 				                            <span class="refused" style="display: none; width: 100%;">
 				                            	<label style="font-weight: bold;">{{ __('estimate.refuse_reason') }}:</label><br>
-				                            	<textarea name="refuse_reason" style="width: 100%; border: 1px solid #ccc; border-radius: 10px;"></textarea>
-				                            	<button class="btn w-full text-white bg-blue-500 hover:bg-blue-600 shadow shadow-black/5 animate-shine bg-[linear-gradient(100deg,theme(colors.blue.500),45%,theme(colors.blue.400),55%,theme(colors.blue.500))] bg-[size:200%_100%] hover:bg-[image:none] refusebtn" name="refuse" style="background: #ff3665; width: 100%;" style="display: none;">Refuse booking</button>
+				                            	<select name="refuse_reason_id" class="refuse-reason-select" style="width: 100%; border: 1px solid #ccc; border-radius: 10px; padding: 10px; background: #fff;">
+				                            		<option value="">-- {{ __('estimate.refuse_reason') }} --</option>
+				                            		<?php foreach($refused_reason_options_raw as $opt): ?>
+				                            			<option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
+				                            		<?php endforeach; ?>
+				                            	</select>
+				                            	<textarea name="refuse_reason" class="refuse-reason-text" placeholder="Toelichting" style="display: none; width: 100%; border: 1px solid #ccc; border-radius: 10px; margin-top: 10px;"></textarea>
+				                            	<button class="btn w-full text-white bg-blue-500 hover:bg-blue-600 shadow shadow-black/5 animate-shine bg-[linear-gradient(100deg,theme(colors.blue.500),45%,theme(colors.blue.400),55%,theme(colors.blue.500))] bg-[size:200%_100%] hover:bg-[image:none] refusebtn" name="refuse" style="background: #ff3665; width: 100%; margin-top: 10px;" style="display: none;">Refuse booking</button>
 				                            </span>
 										<?php endif; ?>
 									<?php else: ?>
@@ -793,9 +812,15 @@
 			                        </div>
 			                        <div class="flex">
 			                            <span class="refused" style="display: none; width: 100%;">
-			                            	<label style="font-weight: bold;">Reason for refusal:</label><br>
-			                            	<textarea name="refuse_reason" style="width: 100%; border: 1px solid #ccc; border-radius: 10px;"></textarea>
-			                            	<button class="btn w-full text-white bg-blue-500 hover:bg-blue-600 shadow shadow-black/5 animate-shine bg-[linear-gradient(100deg,theme(colors.blue.500),45%,theme(colors.blue.400),55%,theme(colors.blue.500))] bg-[size:200%_100%] hover:bg-[image:none]" name="refuse" style="background: #ff3665; width: 100%;" style="display: none;">Refuse estimate</button>
+			                            	<label style="font-weight: bold;">{{ __('estimate.refuse_reason') }}:</label><br>
+			                            	<select name="refuse_reason_id" class="refuse-reason-select" style="width: 100%; border: 1px solid #ccc; border-radius: 10px; padding: 10px; background: #fff;">
+			                            		<option value="">-- {{ __('estimate.refuse_reason') }} --</option>
+			                            		<?php foreach($refused_reason_options_raw as $opt): ?>
+			                            			<option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
+			                            		<?php endforeach; ?>
+			                            	</select>
+			                            	<textarea name="refuse_reason" class="refuse-reason-text" placeholder="Toelichting" style="display: none; width: 100%; border: 1px solid #ccc; border-radius: 10px; margin-top: 10px;"></textarea>
+			                            	<button class="btn w-full text-white bg-blue-500 hover:bg-blue-600 shadow shadow-black/5 animate-shine bg-[linear-gradient(100deg,theme(colors.blue.500),45%,theme(colors.blue.400),55%,theme(colors.blue.500))] bg-[size:200%_100%] hover:bg-[image:none]" name="refuse" style="background: #ff3665; width: 100%; margin-top: 10px;" style="display: none;">Refuse estimate</button>
 			                            </span>
 		                        	</div>
 								<?php endif; ?>
@@ -928,6 +953,16 @@
 		            .replace('.', ',') // Replace decimal point with comma
 		            .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Add dots as thousand separators
 		    }
+		    
+		    $('.refuse-reason-select').on('change', function() {
+		        var $wrap = $(this).closest('span.refused');
+		        var $text = $wrap.find('.refuse-reason-text');
+		        if ($(this).val() === 'other') {
+		            $text.show();
+		        } else {
+		            $text.hide().val('');
+		        }
+		    });
 		});
 	</script>
 	

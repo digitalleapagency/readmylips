@@ -808,11 +808,47 @@ class BookingController extends Controller
         	);
 	    }
 	    
+	    $source_options = \App\Http\Controllers\API\CustomerSettingController::decode_source_options($customer_settings->source_options ?? null);
+	    
 	    if($booking['source']) {
-		    $booking['source'] = array(
+		    $matched = null;
+		    foreach($source_options as $opt) {
+			    if($opt['id'] == $booking['source']) {
+				    $matched = $opt;
+				    break;
+			    }
+		    }
+		    $booking['source'] = $matched ?: array(
 	        	'id' => $booking['source'],
 	        	'name' => ucfirst($booking['source'])
         	);
+	    }
+	    
+	    $refused_reason_options = \App\Http\Controllers\API\CustomerSettingController::decode_refused_reason_options($customer_settings->refused_reason_options ?? null);
+	    
+	    if(!empty($booking['customer_refused_reason_id'])) {
+		    $matched = null;
+		    foreach($refused_reason_options as $opt) {
+			    if($opt['id'] == $booking['customer_refused_reason_id']) {
+				    $matched = $opt;
+				    break;
+			    }
+		    }
+		    $booking['customer_refused_reason_id'] = $matched ?: array(
+	        	'id' => $booking['customer_refused_reason_id'],
+	        	'name' => ucfirst($booking['customer_refused_reason_id'])
+        	);
+	    } else if(!empty($booking['customer_refused_reason'])) {
+		    $other = null;
+		    foreach($refused_reason_options as $opt) {
+			    if($opt['id'] == 'other') {
+				    $other = $opt;
+				    break;
+			    }
+		    }
+		    if($other) {
+			    $booking['customer_refused_reason_id'] = $other;
+		    }
 	    }
         
         $settings = CustomerSetting::where('customer_id', $customer->id)->first();
@@ -1128,6 +1164,20 @@ class BookingController extends Controller
 			$booking->source = $request->source['id'];
 	    } else {
 		    $booking->source = '';
+	    }
+	    
+	    if($request->has('customer_refused_reason_id')) {
+		    if(is_array($request->customer_refused_reason_id) && isset($request->customer_refused_reason_id['id'])) {
+				$booking->customer_refused_reason_id = $request->customer_refused_reason_id['id'];
+		    } else if(is_string($request->customer_refused_reason_id) && $request->customer_refused_reason_id !== '') {
+				$booking->customer_refused_reason_id = $request->customer_refused_reason_id;
+		    } else {
+			    $booking->customer_refused_reason_id = null;
+		    }
+	    }
+	    
+	    if($request->has('customer_refused_reason')) {
+		    $booking->customer_refused_reason = $request->customer_refused_reason;
 	    }
 	    
 	    $booking->save();
