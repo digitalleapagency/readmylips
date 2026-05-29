@@ -470,7 +470,9 @@ class TeamleaderController extends Controller
 				echo '<br>Company ID: '.$companyId;
 				
 				// Step 3: Search for the contact
-				$contactEmail = $invoice_details['email'];
+				// Contact email = email of the person who filled in the booking (booking->email),
+				// NOT the invoicing email (which belongs to the company in Teamleader).
+				$contactEmail = $booking->email;
 				
 				$searchContactData = [
 				    'filter' => [
