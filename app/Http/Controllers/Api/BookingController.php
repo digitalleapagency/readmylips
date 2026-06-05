@@ -808,7 +808,7 @@ class BookingController extends Controller
         	);
 	    }
 	    
-	    $source_options = \App\Http\Controllers\API\CustomerSettingController::decode_source_options($customer_settings->source_options ?? null);
+	    $source_options = \App\Http\Controllers\Api\CustomerSettingController::decode_source_options($customer_settings->source_options ?? null);
 	    
 	    if($booking['source']) {
 		    $matched = null;
@@ -824,7 +824,7 @@ class BookingController extends Controller
         	);
 	    }
 	    
-	    $refused_reason_options = \App\Http\Controllers\API\CustomerSettingController::decode_refused_reason_options($customer_settings->refused_reason_options ?? null);
+	    $refused_reason_options = \App\Http\Controllers\Api\CustomerSettingController::decode_refused_reason_options($customer_settings->refused_reason_options ?? null);
 	    
 	    if(!empty($booking['customer_refused_reason_id'])) {
 		    $matched = null;
