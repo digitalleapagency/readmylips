@@ -629,6 +629,7 @@ class AssetController extends Controller
 	    $asset->email_assistant = $request->email_assistant;
 	    $asset->phone = $request->phone;
 	    $asset->notes = $request->notes;
+	    $asset->drupal_id = $request->drupal_id;
 	    $asset->customer_id = $customer;
 		    
 		$asset->keynote_topics = json_encode($request->keynote_topics);
@@ -880,6 +881,7 @@ class AssetController extends Controller
 		    $asset->email = $request->email;
 		    $asset->email_assistant = $request->email_assistant;
 		    $asset->phone = $request->phone;
+		    $asset->drupal_id = $request->drupal_id;
 		    $asset->video = $request->video;
 		    
 		    if (preg_match('/youtu\.be\/([a-zA-Z0-9_-]+)/', $asset->video, $matches)) {
